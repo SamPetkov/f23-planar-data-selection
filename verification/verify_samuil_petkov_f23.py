@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Samuil Petkov
+# SPDX-License-Identifier: CC-BY-4.0
 """Exact audit for the manuscript 'The Exact Planar Data-Selection Constant F(2,3)'.
 
 This script is supplementary.  The mathematical proof does not depend on
@@ -8,9 +10,15 @@ floating-point computation or an optimization solver.
 from __future__ import annotations
 
 from fractions import Fraction as F
-from itertools import product
+from itertools import permutations
 import random
 import sympy as sp
+
+
+def require(condition: bool, message: str) -> None:
+    """Raise even under ``python -O`` when an audit condition fails."""
+    if not condition:
+        raise AssertionError(message)
 
 
 def sympy_certificate_checks() -> None:
@@ -19,7 +27,7 @@ def sympy_certificate_checks() -> None:
     p = sp.Matrix([p1, p2, p3])
 
     def s(a: int, b: int, c: int) -> sp.Matrix:
-        assert a + b + c == 3
+        require(a + b + c == 3, "grid multiplicities must sum to three")
         return sp.Matrix([sp.Rational(a, 3), sp.Rational(b, 3), sp.Rational(c, 3)])
 
     def outer(x: sp.Matrix) -> sp.Matrix:
@@ -48,28 +56,57 @@ def sympy_certificate_checks() -> None:
     }
 
     for name, (points, weights) in cases.items():
-        assert sp.factor(sum(weights) - 1) == 0
+        require(sp.factor(sum(weights) - 1) == 0, f"Case {name} weights do not sum to one")
         matrix = sp.zeros(3)
         for point, weight in zip(points, weights, strict=True):
             matrix += weight * outer(point - p)
         difference = (matrix - target).applyfunc(lambda x: sp.factor(sp.expand(x)))
-        assert difference == sp.zeros(3)
+        require(difference == sp.zeros(3), f"Case {name} covariance identity failed")
         print(f"Case {name}: the nine entries of the covariance identity vanish exactly.")
 
-    # Boundary support checks.
-    edge_A = {p1: sp.Rational(5, 6), p2: sp.Rational(1, 6)}
+    # Exact algebra behind coefficient nonnegativity in the two sorted chambers.
     A_weights = cases["A"][1]
-    assert A_weights[0].subs(edge_A) == 0  # p3 = 0; s111 uses label 3.
+    require(
+        sp.factor(A_weights[1] - sp.Rational(9, 5) * (p2 - sp.Rational(1, 6))) == 0,
+        "Case A p2 coefficient decomposition failed",
+    )
+    require(
+        sp.factor(A_weights[2] - sp.Rational(9, 5) * (p1 - sp.Rational(1, 3))) == 0,
+        "Case A p1 coefficient decomposition failed",
+    )
+
+    B_weights = cases["B"][1]
+    require(
+        sp.factor(
+            B_weights[2]
+            - (9 * (p1 - sp.Rational(2, 3)) + 2) / 5
+        )
+        == 0,
+        "Case B large-p1 coefficient decomposition failed",
+    )
+
+    # The ten exactly-three patterns are complete and invariant under labels.
+    grid = set(compositions_of_three(3))
+    require(len(grid) == 10, "the denominator-three grid must have ten points")
+    for permutation in permutations(range(3)):
+        permuted = {tuple(k[i] for i in permutation) for k in grid}
+        require(permuted == grid, "the grid is not invariant under a label permutation")
+
+    # Boundary support checks, including the chamber interface.
+    edge_A = {p1: sp.Rational(5, 6), p2: sp.Rational(1, 6)}
+    require(A_weights[0].subs(edge_A) == 0, "Case A uses a zero-weight label")
+    require(A_weights[1].subs(edge_A) == 0, "Case A interface coefficient should vanish")
 
     edge_B = {p1: sp.Rational(11, 12), p2: sp.Rational(1, 12)}
-    B_weights = cases["B"][1]
-    assert B_weights[0].subs(edge_B) == 0  # p3 = 0; s201 uses label 3.
+    require(B_weights[0].subs(edge_B) == 0, "Case B uses a zero-weight label")
 
     vertex = {p1: 1, p2: 0}
-    assert B_weights[0].subs(vertex) == 0
-    assert B_weights[1].subs(vertex) == 0
-    assert B_weights[2].subs(vertex) == 1
-    print("Zero-weight label checks pass on both chambers and at a simplex vertex.")
+    require(B_weights[0].subs(vertex) == 0, "vertex coefficient a should vanish")
+    require(B_weights[1].subs(vertex) == 0, "vertex coefficient b should vanish")
+    require(B_weights[2].subs(vertex) == 1, "vertex coefficient c should equal one")
+    print(
+        "Certificate coefficient, chamber-interface, permutation, and zero-label checks pass."
+    )
 
 
 def compositions_of_three(number_of_labels: int) -> list[tuple[int, ...]]:
@@ -101,9 +138,9 @@ def scale(a: F, x: tuple[F, F]) -> tuple[F, F]:
 def exact_instance(
     points: list[tuple[F, F]], weights: list[F]
 ) -> tuple[tuple[F, F], F, F]:
-    assert len(points) == len(weights)
-    assert all(w > 0 for w in weights)
-    assert sum(weights, F(0)) == 1
+    require(len(points) == len(weights), "point and weight counts differ")
+    require(all(w > 0 for w in weights), "all represented support weights must be positive")
+    require(sum(weights, F(0)) == 1, "weights must sum to one")
 
     mean = (F(0), F(0))
     for point, weight in zip(points, weights, strict=True):
@@ -130,21 +167,43 @@ def lower_bound_and_planar_examples() -> None:
         [(F(0), F(0)), (F(1), F(0))],
         [F(5, 6), F(1, 6)],
     )
-    assert mean == (F(1, 6), F(0))
-    assert variance == F(5, 36)
-    assert q == F(1, 36)
-    assert (variance + q) / variance == F(6, 5)
+    require(mean == (F(1, 6), F(0)), "collinear example mean is wrong")
+    require(variance == F(5, 36), "collinear example variance is wrong")
+    require(q == F(1, 36), "collinear example q is wrong")
+    require((variance + q) / variance == F(6, 5), "collinear ratio is wrong")
     print("Six-point collinear extremizer: exact ratio 6/5.")
 
     mean, variance, q = exact_instance(
         [(F(1), F(-1)), (F(1), F(5)), (F(-5), F(-1))],
         [F(2, 3), F(1, 6), F(1, 6)],
     )
-    assert mean == (F(0), F(0))
-    assert variance == F(10)
-    assert q == F(2)
-    assert (variance + q) / variance == F(6, 5)
+    require(mean == (F(0), F(0)), "noncollinear example mean is wrong")
+    require(variance == F(10), "noncollinear example variance is wrong")
+    require(q == F(2), "noncollinear example q is wrong")
+    require((variance + q) / variance == F(6, 5), "noncollinear ratio is wrong")
+    area_determinant = (F(0) * F(0)) - (F(6) * F(-6))
+    require(area_determinant != 0, "the planar equality example is collinear")
     print("Noncollinear extremizer: exact ratio 6/5.")
+
+    mean, variance, q = exact_instance(
+        [(F(2), F(-1)), (F(-7), F(8)), (F(-10), F(-1))],
+        [F(29, 36), F(4, 36), F(3, 36)],
+    )
+    require(mean == (F(0), F(0)), "rank-two example mean is wrong")
+    require(variance == F(25), "rank-two example variance is wrong")
+    require(q == F(5), "rank-two example q is wrong")
+    require((variance + q) / variance == F(6, 5), "rank-two ratio is wrong")
+    print("Rank-two-forcing example: exact ratio 6/5.")
+
+
+def edge_case_checks() -> None:
+    mean, variance, q = exact_instance(
+        [(F(3), F(-2))],
+        [F(1)],
+    )
+    require(mean == (F(3), F(-2)), "singleton mean is wrong")
+    require(variance == 0 and q == 0, "zero-variance singleton check failed")
+    print("Zero-variance singleton check passes exactly.")
 
 
 def rational_stress_test(seed: int = 20260718, trials: int = 500) -> None:
@@ -177,15 +236,39 @@ def rational_stress_test(seed: int = 20260718, trials: int = 500) -> None:
             for count, point in zip(k, points, strict=True):
                 selected = add(selected, scale(F(count, 3), point))
             errors.append(dot(selected, selected))
-        assert min(errors) <= variance / 5
+        require(min(errors) <= variance / 5, "three-point rational stress test failed")
 
     print(f"Exact rational stress test: {trials} centered three-point instances passed (seed {seed}).")
+
+
+def multisupport_stress_test(seed: int = 20260719, trials: int = 500) -> None:
+    """Exact tests on arbitrary laws with two through six represented labels."""
+    rng = random.Random(seed)
+
+    for _ in range(trials):
+        label_count = rng.randint(2, 6)
+        raw = [rng.randint(1, 30) for _ in range(label_count)]
+        total = sum(raw)
+        weights = [F(value, total) for value in raw]
+        points = [
+            (F(rng.randint(-12, 12)), F(rng.randint(-12, 12)))
+            for _ in range(label_count)
+        ]
+        _, variance, q = exact_instance(points, weights)
+        require(q <= variance / 5, "multi-support rational stress test failed")
+
+    print(
+        f"Exact multi-support stress test: {trials} instances with 2-6 labels passed "
+        f"(seed {seed})."
+    )
 
 
 def main() -> None:
     sympy_certificate_checks()
     lower_bound_and_planar_examples()
+    edge_case_checks()
     rational_stress_test()
+    multisupport_stress_test()
     print("All exact audit checks passed.")
 
 

@@ -1,0 +1,74 @@
+name: Verify proof package
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install exact-audit dependencies
+        run: python -m pip install --requirement requirements.txt
+
+      - name: Run and compare exact audit
+        shell: bash
+        run: |
+          python --version
+          python -c "import sympy; print('SymPy', sympy.__version__)"
+          python verification/verify_samuil_petkov_f23.py | tee /tmp/f23-output.txt
+          diff -u verification/verify_samuil_petkov_f23_output.txt /tmp/f23-output.txt
+
+      - name: Verify checks survive optimized Python
+        shell: bash
+        run: |
+          python -O verification/verify_samuil_petkov_f23.py > /tmp/f23-output-optimized.txt
+          diff -u verification/verify_samuil_petkov_f23_output.txt /tmp/f23-output-optimized.txt
+
+  latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Install TeX dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            latexmk \
+            lmodern \
+            texlive-fonts-recommended \
+            texlive-latex-base \
+            texlive-latex-extra \
+            texlive-latex-recommended
+
+      - name: Build manuscript
+        shell: bash
+        run: |
+          mkdir -p build
+          pdflatex --version | head -n 1
+          latexmk -version | head -n 2
+          latexmk -pdf -halt-on-error -file-line-error -interaction=nonstopmode \
+            -outdir=build paper/Samuil_Petkov_F23_Detailed_Proof.tex
+          if grep -E "(Citation|Reference).*undefined|There were undefined references" build/*.log; then
+            exit 1
+          fi
+
+      - name: Upload rebuilt manuscript
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reviewed-manuscript
+          path: build/Samuil_Petkov_F23_Detailed_Proof.pdf
+          if-no-files-found: error
