@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: >-
+  Please cite the manuscript under preferred-citation. If you reuse the
+  verifier, please also cite this repository version.
+title: "Proof package for The Exact Planar Data-Selection Constant F(2,3)"
+type: software
+authors:
+  - family-names: Petkov
+    given-names: Samuil
+version: "0.1.0"
+date-released: "2026-07-18"
+repository-code: "https://github.com/SamPetkov/f23-planar-data-selection"
+license: CC-BY-4.0
+keywords:
+  - data selection
+  - mean estimation
+  - approximation ratio
+  - exact symbolic verification
+preferred-citation:
+  type: unpublished
+  title: "The Exact Planar Data-Selection Constant F(2,3)"
+  authors:
+    - family-names: Petkov
+      given-names: Samuil
+  year: 2026
+  url: "https://github.com/SamPetkov/f23-planar-data-selection"
+  license: CC-BY-4.0

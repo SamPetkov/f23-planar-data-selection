@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+
+# LaTeX build products
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+build/
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db

@@ -1,3 +1,5 @@
+% SPDX-FileCopyrightText: 2026 Samuil Petkov
+% SPDX-License-Identifier: CC-BY-4.0
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
@@ -53,7 +55,7 @@ For a finite multiset $D\subset\R^2$, let $L_D(h)$ be the average squared Euclid
 \[
 F(2,3):=\sup_D\frac{L_D^*(3)}{L_D^*}=\frac65.
 \]
-The upper bound is reduced to distributions on at most three original support points and is then proved by an exact piecewise-rational covariance certificate.  A six-point multiset attains equality.  The proof covers zero variance, zero weights, coincident or collinear support, repeated selection, and the supremum-versus-maximum issue.  A semidefinite primal-dual formulation and an independent exact verification protocol are included.  This is a mathematical-analysis draft and does not assert peer-reviewed validation or bibliographic priority.
+The upper bound is reduced to distributions on at most three original support points and is then proved by an exact piecewise-rational covariance certificate.  A six-point multiset attains equality.  The proof covers zero variance, zero weights, coincident or collinear support, repeated selection, and the supremum-versus-maximum issue.  A semidefinite primal-dual formulation and a supplementary exact symbolic audit are included.  This is a mathematical-analysis draft and does not assert peer-reviewed validation or bibliographic priority.
 \end{abstract}
 
 \tableofcontents
@@ -139,7 +141,7 @@ Equality is attained by the multiset consisting of five copies of $(0,0)$ and on
 The supremum in \eqref{eq:def-F} is therefore a maximum.
 \end{theorem}
 
-The remainder of the manuscript proves this theorem.  The problem originates in the data-selection framework described in \cite{HMSYopen,HMSYerm}.
+The remainder of the manuscript proves this theorem.  The problem originates in the data-selection framework described in \cite{HMSYopen,HMSYerm}.  In the source problem, a legal selection is a sequence $z_1,z_2,z_3\in D$; the equivalent finitely supported formulation explicitly permits any sequence of three points from $\supp(D)$ \cite[Appendix~A.2]{HMSYerm}.  Thus the repeated-selection convention above is part of the target finite-dataset problem.  It is different from a selector required to choose three distinct dataset indices.
 
 \section{Variance decomposition and the exact target inequality}
 
@@ -291,6 +293,17 @@ q(P)&:=\min_{x_1,x_2,x_3\in\supp(P)}
 \end{align}
 The selected points may again be repeated.
 
+For later comparison of weighted laws, define
+\begin{equation}
+R(P):=
+\begin{cases}
+1+q(P)/V(P),&V(P)>0,\\
+1,&V(P)=0.
+\end{cases}
+\label{eq:weighted-ratio}
+\end{equation}
+A finitely supported law of zero variance is a point mass after coincident atoms are merged.
+
 \begin{proposition}[Rational weights are exactly finite multisets]
 Every finite multiset induces a finitely supported law with rational weights.  Conversely, every finitely supported law with rational weights is represented by a finite multiset.  This correspondence preserves the support, mean, variance, $q$, and approximation ratio.
 \end{proposition}
@@ -301,8 +314,13 @@ The forward direction uses $p_i=n_i/N$.  Conversely, choose a common denominator
 
 Real weights arise in the support reduction below.  Their use can be justified both directly and by closure.
 
-\begin{proposition}[Continuity and closure]
-Fix distinct points $z_1,\ldots,z_m$ and a simplex face determined by an index set $I$, meaning $p_i>0$ for $i\in I$ and $p_i=0$ for $i\notin I$.  On that face, $\mu(P)$, $V(P)$, and $q(P)$ are continuous functions of $p$.  Wherever $V(P)>0$, the ratio $1+q(P)/V(P)$ is continuous.  Consequently, the supremum over real finitely supported laws equals the supremum over finite multisets.
+\begin{proposition}[Fixed-support continuity and closure]
+Fix distinct points $z_1,\ldots,z_m$ and a nonempty index set $I$.  On the fixed-support stratum
+\[
+\Delta_I^\circ:=\left\{p:\sum_i p_i=1,\quad
+p_i>0\ (i\in I),\quad p_i=0\ (i\notin I)\right\},
+\]
+which is the relative interior of the coordinate face indexed by $I$, the functions $\mu(P)$, $V(P)$, and $q(P)$ are continuous in $p$.  Wherever $V(P)>0$, $R(P)$ is continuous.  No continuity across support-changing boundaries is asserted or needed.  Consequently, the supremum over real finitely supported laws equals the supremum over finite multisets.
 \end{proposition}
 
 \begin{proof}
@@ -313,7 +331,7 @@ V(P)=\sum_i p_i\norm{z_i}^2-\norm{\sum_i p_i z_i}^2,
 \end{equation}
 so $V(P)$ is continuous.
 
-On the fixed support face $I$, each legal selected mean is indexed by a vector
+On the fixed-support stratum $\Delta_I^\circ$, each legal selected mean is indexed by a vector
 \[
 k=(k_i)_{i\in I},\qquad k_i\in\mathbb Z_{\ge0},\qquad \sum_{i\in I}k_i=3.
 \]
@@ -324,7 +342,7 @@ p\longmapsto
 \]
 is continuous.  The minimum of finitely many continuous functions is continuous, so $q(P)$ is continuous.  Division by $V(P)$ is continuous wherever $V(P)>0$.
 
-Positive rational points are dense in every simplex face.  Thus every positive-variance real-weight law can be approximated, without changing its support, by rational-weight laws whose ratios converge to its ratio.  Each rational-weight law is a finite multiset by the preceding proposition.  Zero-variance laws have ratio one and do not enlarge the supremum.
+Let $S_{\mathbb Q}$ and $S_{\mathbb R}$ denote the suprema over rational- and real-weight finitely supported laws.  Since rational laws are a subclass, $S_{\mathbb Q}\le S_{\mathbb R}$.  Conversely, positive rational points are dense in every $\Delta_I^\circ$.  For any positive-variance real-weight law $P$, choose rational weights $p^{(r)}\to p$ in the same stratum.  The preceding continuity gives $R(P^{(r)})\to R(P)$, and each $P^{(r)}$ is a finite multiset by the preceding proposition.  Hence $R(P)\le S_{\mathbb Q}$.  A zero-variance law is represented by a one-point multiset and has ratio one.  Thus $S_{\mathbb R}\le S_{\mathbb Q}$, proving equality of the suprema.
 \end{proof}
 
 \begin{remark}[Why no approximation is needed for the upper bound]
@@ -365,7 +383,7 @@ Consider the feasible set of alternative weights that preserve total mass and me
 \end{equation}
 The original weight vector $p$ belongs to $\mathcal P$, so the set is nonempty.  It is closed and contained in the standard simplex, hence compact.
 
-Define the linear functional
+Define the linear functional on all of $\R^m$
 \begin{equation}
 J(a):=\sum_{i=1}^m a_i\norm{z_i}^2.
 \label{eq:J}
@@ -512,7 +530,14 @@ The covariance matrix associated with $p$ is
 C_p:=\diag(p)-pp^{\mathsf T}.
 \label{eq:Cp}
 \end{equation}
-The next lemma constructs a random legal grid point $S$ whose second moment around $p$ is exactly $C_p/5$.
+It is positive semidefinite because, for every $x\in\R^3$,
+\[
+x^{\mathsf T}C_px
+=\sum_i p_i x_i^2-\left(\sum_i p_i x_i\right)^2
+=\sum_i p_i(x_i-\bar x_p)^2\ge0,
+\qquad \bar x_p:=\sum_i p_i x_i.
+\]
+Equivalently, $C_p$ is the covariance matrix of a categorical one-hot draw with probabilities $p$.  The next lemma constructs a random legal grid point $S$ whose second moment about the fixed point $p$ is exactly $C_p/5$.  It does not require, and generally does not have, $\E S=p$.
 
 \section{Exact covariance certificate}
 
@@ -541,7 +566,7 @@ p_1\ge p_2\ge p_3\ge0.
 We divide the sorted simplex into two chambers.
 
 \subsubsection*{Case A: $p_2\ge1/6$}
-Assign nonzero coefficients only to the four grid points below:
+Assign potentially nonzero coefficients only to the four grid points below:
 \begin{equation}
 \begin{array}{c|c}
 \toprule
@@ -679,7 +704,7 @@ Since $p_3\le p_2<1/6$,
 p_1=1-p_2-p_3>\frac23.
 \label{eq:p1-large}
 \end{equation}
-Assign nonzero coefficients only to
+Assign potentially nonzero coefficients only to
 \begin{equation}
 \begin{array}{c|c}
 \toprule
@@ -786,7 +811,7 @@ Use the centered vectors $w_i$ and weights $p_i$ from Section 5.  Let $S$ be the
 Y:=\sum_{i=1}^3S_iw_i.
 \label{eq:def-Y}
 \end{equation}
-Every realization of $S$ represents exactly three selections because $S=k/3$ with $\sum_i k_i=3$.  The boundary part of the certificate ensures that only positive-weight support labels are used.
+Every positive-probability realization of $S$ represents exactly three selections because $S=k/3$ with $\sum_i k_i=3$.  The boundary part of the certificate ensures that only positive-weight support labels are used.
 
 By \eqref{eq:center-condition},
 \[
@@ -896,13 +921,13 @@ Combining the universal upper bound with this exact equality example proves
 \]
 Because the example is a finite multiset, the supremum is attained.
 
-\section{Equality and extremal information}
+\section{Examples and partial extremal information}
 
-The lower-bound example is collinear.  Equality is not confined to a line.
+The lower-bound example is collinear.  Equality is not confined to a line.  We completely classify equality only for two-point laws; the later subsections exhibit, but do not classify, higher-support and global extremizers.
 
 \subsection{Two-point equality laws}
 
-Let the two distinct support points be $a,b$, let $d=b-a\ne0$, and put mass $\theta$ at $b$ and $1-\theta$ at $a$.  Then
+Let the two distinct support points be $a,b$, let $d=b-a\ne0$, and put mass $0<\theta<1$ at $b$ and $1-\theta$ at $a$.  Then
 \[
 \mu=a+\theta d,
 \qquad
@@ -915,7 +940,7 @@ q=\operatorname{dist}\!\left(
 \right)^2\norm d^2.
 \label{eq:two-point-q}
 \end{equation}
-By symmetry, assume $0\le\theta\le1/2$.
+By symmetry, assume $0<\theta\le1/2$.
 
 If $0\le\theta\le1/6$, the nearest grid point is $0$, and equality $q=V/5$ for $\theta>0$ is
 \[
@@ -977,7 +1002,15 @@ Thus $q=2=V/5$, and the ratio is $6/5$.  The vectors $b-a=(0,6)$ and $c-a=(-6,0)
 
 \subsection{A fixed weight vector forcing rank two}
 
-The optimal quadratic form need not be reducible to rank one.  Consider
+For a fixed full-support weight vector, every fixed-weight optimizer may be forced to have rank two.  To make this precise before the general SDP formulation below, put
+\[
+T:=\{u\in\R^3:\one^{\mathsf T}u=0\}.
+\]
+A form $H\succeq0$ on $T$ is called normalized when $\langle H,C_p\rangle=1$, and it is fixed-$p$ optimal when it maximizes
+\[
+\min_{s\in G_3}(s-p)^{\mathsf T}H(s-p)
+\]
+over all normalized forms.  Now consider
 \[
 p=\left(\frac{29}{36},\frac4{36},\frac3{36}\right)
 \]
@@ -995,7 +1028,17 @@ are
 \]
 Thus $q=5=V/5$.
 
-For this $p$, Case B of the certificate gives strictly positive coefficients on $201$, $210$, and $300$.  If a normalized positive-semidefinite form is optimal, all three of these values must equal the common minimum $1/5$.  In tangent coordinates $u=(u_1,u_2,-u_1-u_2)$, write the form as
+For this $p$, Case B of the certificate gives
+\[
+\lambda_{201}=\frac3{20},\qquad
+\lambda_{210}=\frac15,\qquad
+\lambda_{300}=\frac{13}{20}.
+\]
+The displayed geometry has normalized minimum $q/V=1/5$, while the certificate bounds every normalized form's minimum by $1/5$.  Hence the fixed-$p$ optimum is exactly $1/5$.  For any optimal normalized form, each deterministic value is at least this minimum, while the certificate makes the positive weighted average of the three displayed values equal to
+\[
+\frac15\langle H,C_p\rangle=\frac15.
+\]
+All three values must therefore equal $1/5$.  In tangent coordinates $u=(u_1,u_2,-u_1-u_2)$, write the form as
 \[
 G=\begin{pmatrix}\alpha&\beta\\\beta&\gamma\end{pmatrix}.
 \]
@@ -1012,7 +1055,7 @@ A normalized form is nonzero; positive semidefiniteness and the displayed relati
 
 \section{Semidefinite formulation}
 
-This section is not needed for the direct upper-bound proof, but it explains the certificate as an exact dual solution.  Write
+This section is not needed for the direct upper-bound proof, but it recasts the covariance identity as an exact dual-feasible certificate.  It is not an independent proof: the weak-duality calculation below is the expectation argument of Section~7 in SDP notation.  The point with $r=1/5$ need not be dual-optimal; for example, when $p=(1/3,1/3,1/3)$, the legal grid point $s=p$ gives $\phi(p)=0$.  Write
 \[
 \Delta_2:=\{p\in\R_{\ge0}^3:p_1+p_2+p_3=1\}.
 \]
@@ -1034,6 +1077,12 @@ u^{\mathsf T}C_pu
 =\sum_i p_i u_i^2-\left(\sum_i p_i u_i\right)^2.
 \]
 This is the weighted variance of the scalar values $u_i$.  It vanishes only when all $u_i$ on $I$ are equal; the unweighted sum condition then forces that common value to be zero.  Thus $C_p$ is positive definite on $T_I$.
+
+Choose an orthonormal-basis matrix $U_I$ for $T_I$.  All positive-semidefinite constraints, Loewner inequalities, and trace pairings below are understood after compression to $T_I$, for example as $U_I^{\mathsf T}BU_I$.  Equivalently, for a quadratic form $H$ on $T_I$,
+\[
+\langle H,C_p\rangle
+:=\sum_{i\in I}p_i H[e_i-p,e_i-p].
+\]
 
 \subsection{From geometry to a positive-semidefinite form}
 
@@ -1078,7 +1127,7 @@ Finally,
 \sum_i p_i(e_i-p)(e_i-p)^{\mathsf T}\right\rangle\\
 &=\langle H,C_p\rangle.
 \end{align*}
-Thus every admissible form is realized by an actual planar support geometry.  Rank-one forms give collinear support and rank-two forms give genuinely planar support.
+Thus every admissible form is realized by an actual planar support geometry.  Rank zero gives coincident locations, rank one gives collinear support, and rank two---possible only when $|I|=3$---gives genuinely planar support.
 
 Let
 \[
@@ -1092,7 +1141,15 @@ After normalizing the variance to one, the fixed-weight excess problem is
 \min_{s\in G_3(I)}(s-p)^{\mathsf T}H(s-p).
 \label{eq:phi-primal-short}
 \end{equation}
-The maximum exists: $C_p$ is positive definite on $T_I$, so the normalized positive-semidefinite feasible set is closed and bounded in a finite-dimensional space.  Define $\phi(p)=0$ at the three simplex vertices.  The support reduction and the two realization directions above give the exact global identity
+The maximum exists: $C_p$ is positive definite on $T_I$, so the normalized positive-semidefinite feasible set is closed and bounded in a finite-dimensional space.  Indeed, if $c>0$ is the least eigenvalue of the compression of $C_p$, then $1=\langle H,C_p\rangle\ge c\operatorname{tr}H$ for every feasible $H\succeq0$.  Define $\phi(p)=0$ at the three simplex vertices.
+
+For completeness, write $\rho(P)=q(P)/V(P)$ when $V(P)>0$ and $\rho(P)=0$ otherwise.  Support reduction gives $P'$ on at most three points.  If $V(P')=0$, then $q(P)\le q(P')=0$.  Otherwise,
+\[
+\rho(P)=\frac{q(P)}{V(P)}
+\le\frac{q(P')}{V(P)}
+\le\frac{q(P')}{V(P')}.
+\]
+Thus every finitely supported law is dominated by a law on at most three points.  Conversely, the realization construction produces a real weighted planar law for every feasible $p,H$, and the fixed-support rational approximation proved earlier places its value in the supremum over finite multisets.  Together with the two realization directions, this proves the exact global identity
 \begin{equation}
 F(2,3)-1=\sup_{p\in\Delta_2}\phi(p).
 \label{eq:rho-phi}
@@ -1100,7 +1157,7 @@ F(2,3)-1=\sup_{p\in\Delta_2}\phi(p).
 
 \subsection{Dual problem}
 
-For $A_s:=(s-p)(s-p)^{\mathsf T}$, introduce a scalar $t$.  The primal SDP is
+For $s\in G_3(I)$, let $A_s:=(s-p)(s-p)^{\mathsf T}$ and introduce a scalar $t$.  The primal SDP is
 \begin{equation}
 \begin{array}{ll}
 \text{maximize}&t\\[1mm]
@@ -1127,15 +1184,15 @@ Thus the dual is
 \begin{equation}
 \begin{array}{ll}
 \text{minimize}&r\\[1mm]
-\text{subject to}&\lambda_s\ge0,\quad\sum_s\lambda_s=1,\\
-&\displaystyle\sum_s\lambda_s(s-p)(s-p)^{\mathsf T}
+\text{subject to}&\lambda_s\ge0,\quad\displaystyle\sum_{s\in G_3(I)}\lambda_s=1,\\
+&\displaystyle\sum_{s\in G_3(I)}\lambda_s(s-p)(s-p)^{\mathsf T}
 \preceq rC_p\quad\text{on }T_I.
 \end{array}
 \label{eq:SDP-dual}
 \end{equation}
 Strong duality holds for $|I|\ge2$: choose a positive-definite form $H_0$ on $T_I$, rescale it to satisfy $\langle H_0,C_p\rangle=1$, and choose $t_0$ strictly below every $\langle H_0,A_s\rangle$.  This is a strictly feasible primal point relative to the equality constraint.
 
-The certificate in \eqref{eq:certificate} is stronger than dual feasibility: it gives equality with $r=1/5$ in the ambient $3\times3$ matrix space.  Weak duality therefore already yields $\phi(p)\le1/5$.  The expectation proof in Section 7 is exactly the same calculation without SDP terminology.
+The certificate in \eqref{eq:certificate} is stronger than dual feasibility: its zero-coordinate clause ensures that $\lambda$ is supported on $G_3(I)$ even on boundary faces, and it gives equality with $r=1/5$ in the ambient $3\times3$ matrix space.  Weak duality therefore already yields $\phi(p)\le1/5$.  The expectation proof in Section~7 is exactly the same calculation without SDP terminology.
 
 \section{Independent audit and verification}
 
@@ -1180,7 +1237,7 @@ q(P)\le q(P')\le V(P')/5\le V(P)/5.
 \item A finite equality construction proves that the supremum is attained.
 \end{enumerate}
 
-An accompanying script, \texttt{verify\_samuil\_petkov\_f23.py}, performs exact symbolic verification of all nine entries of both covariance identities, exact boundary checks, exact verification of the collinear and noncollinear equality examples, and an additional rational-arithmetic stress test.  The script uses no optimization solver.  These computations are supplementary; the proof above is algebraically self-contained.
+An accompanying script, \texttt{verify\_samuil\_petkov\_f23.py}, performs exact symbolic verification of all nine entries of both covariance identities, exact boundary and coefficient checks, exact verification of the collinear and noncollinear equality examples, and additional rational-arithmetic stress tests.  The script uses no optimization solver.  It does not mechanically prove the support-reduction lemma, the fixed-support continuity argument, or the expectation-to-deterministic extraction.  These computations are a supplementary audit; the proof above remains the source of the universal theorem.
 
 \section*{Conclusion}
 
@@ -1193,19 +1250,25 @@ the variance decomposition reduces the approximation problem to a selected-mean 
 \boxed{F(2,3)=\frac65}.
 \]
 
+\paragraph{License.}
+\textcopyright\ 2026 Samuil Petkov.  This manuscript is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0):
+\url{https://creativecommons.org/licenses/by/4.0/}.
+
 \begin{thebibliography}{9}
 
 \bibitem{HMSYopen}
 S. Hanneke, S. Moran, A. Shlimovich, and A. Yehudayoff,
 \emph{Open Problem: Data Selection for Regression Tasks},
 Proceedings of the 38th Conference on Learning Theory (COLT),
-Proceedings of Machine Learning Research, vol. 291, 2025.
+Proceedings of Machine Learning Research, vol. 291, pp. 6225--6229, 2025.
+\url{https://proceedings.mlr.press/v291/hanneke25e.html}.
 
 \bibitem{HMSYerm}
 S. Hanneke, S. Moran, A. Shlimovich, and A. Yehudayoff,
 \emph{Data Selection for ERMs},
 Proceedings of the 38th Conference on Learning Theory (COLT),
-Proceedings of Machine Learning Research, vol. 291, 2025.
+Proceedings of Machine Learning Research, vol. 291, pp. 2634--2665, 2025.
+\url{https://proceedings.mlr.press/v291/hanneke25a.html}.
 
 \end{thebibliography}
 
