@@ -1,0 +1,7 @@
+Case A: the nine entries of the covariance identity vanish exactly.
+Case B: the nine entries of the covariance identity vanish exactly.
+Zero-weight label checks pass on both chambers and at a simplex vertex.
+Six-point collinear extremizer: exact ratio 6/5.
+Noncollinear extremizer: exact ratio 6/5.
+Exact rational stress test: 500 centered three-point instances passed (seed 20260718).
+All exact audit checks passed.

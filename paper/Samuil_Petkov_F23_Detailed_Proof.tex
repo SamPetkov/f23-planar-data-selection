@@ -1,0 +1,1212 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[margin=1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={The Exact Planar Data-Selection Constant F(2,3)},
+  pdfauthor={Samuil Petkov},
+  pdfsubject={Detailed proof, semidefinite formulation, and audit}
+}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{S. Petkov}
+\fancyhead[R]{The exact value of $F(2,3)$}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\ip}[2]{\left\langle #1,#2\right\rangle}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+
+\title{\textbf{The Exact Planar Data-Selection Constant $F(2,3)$}\\[4pt]
+\large A detailed proof, semidefinite formulation, and audit}
+\author{Samuil Petkov}
+\date{July 18, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For a finite multiset $D\subset\R^2$, let $L_D(h)$ be the average squared Euclidean distance from $h$ to the observations in $D$.  Let $L_D^*$ be the optimal population loss and let $L_D^*(3)$ be the least loss obtainable by evaluating $L_D$ at the unweighted average of exactly three support points, with repeated selections allowed.  This manuscript proves, step by step, that
+\[
+F(2,3):=\sup_D\frac{L_D^*(3)}{L_D^*}=\frac65.
+\]
+The upper bound is reduced to distributions on at most three original support points and is then proved by an exact piecewise-rational covariance certificate.  A six-point multiset attains equality.  The proof covers zero variance, zero weights, coincident or collinear support, repeated selection, and the supremum-versus-maximum issue.  A semidefinite primal-dual formulation and an independent exact verification protocol are included.  This is a mathematical-analysis draft and does not assert peer-reviewed validation or bibliographic priority.
+\end{abstract}
+
+\tableofcontents
+
+\section{Problem statement and definitions}
+
+The definitions are given before any derived notation is introduced.
+
+\begin{definition}[Finite multiset and support]
+Let
+\[
+D=\{z_1,\ldots,z_N\},\qquad N\ge 1,
+\]
+be a finite multiset of points in $\R^2$.  The indexed list records occurrences, so two different indices may carry the same point.  The support $\supp(D)$ is the set of distinct locations appearing among the $z_r$.
+\end{definition}
+
+\begin{definition}[Population loss]
+For every $h\in\R^2$, define
+\begin{equation}
+L_D(h):=\frac1N\sum_{r=1}^N \norm{h-z_r}_2^2.
+\label{eq:def-L}
+\end{equation}
+Thus $L_D(h)$ is the average squared Euclidean distance from $h$ to the population observations.
+\end{definition}
+
+\begin{definition}[Population mean and optimal loss]
+Define
+\begin{equation}
+\mu_D:=\frac1N\sum_{r=1}^N z_r
+\label{eq:def-mean}
+\end{equation}
+and
+\begin{equation}
+L_D^*:=\min_{h\in\R^2}L_D(h).
+\label{eq:def-optimal-loss}
+\end{equation}
+We shall prove, rather than assume, that the unique minimizer is $\mu_D$.
+\end{definition}
+
+\begin{definition}[Exactly three selections, with repetition]
+The selector chooses an ordered triple
+\[
+(x_1,x_2,x_3)\in\supp(D)^3.
+\]
+The same support point may be used two or three times, regardless of how many times it occurs in the population multiset.  The selected estimator is the unweighted mean
+\[
+\overline{x}:=\frac{x_1+x_2+x_3}{3}.
+\]
+Define
+\begin{equation}
+L_D^*(3):=
+\min_{(x_1,x_2,x_3)\in\supp(D)^3}
+L_D\!\left(\frac{x_1+x_2+x_3}{3}\right).
+\label{eq:def-selected-loss}
+\end{equation}
+Although the triple is formally ordered, its average depends only on the multiplicities of the selected support points.
+\end{definition}
+
+\begin{definition}[Approximation ratio and planar constant]
+For a nonzero-variance population, define
+\[
+R(D):=\frac{L_D^*(3)}{L_D^*}.
+\]
+If $L_D^*(3)=L_D^*=0$, set $R(D)=1$.  If $L_D^*=0<L_D^*(3)$, set $R(D)=+\infty$.  Finally, define
+\begin{equation}
+F(2,3):=\sup_D R(D),
+\label{eq:def-F}
+\end{equation}
+where the supremum ranges over all nonempty finite multisets in $\R^2$.
+\end{definition}
+
+\begin{theorem}[Main theorem]
+For every finite multiset $D\subset\R^2$,
+\begin{equation}
+L_D^*(3)\le \frac65 L_D^*.
+\label{eq:main-upper}
+\end{equation}
+Equality is attained by the multiset consisting of five copies of $(0,0)$ and one copy of $(1,0)$.  Consequently,
+\begin{equation}
+\boxed{F(2,3)=\frac65}.
+\label{eq:main-value}
+\end{equation}
+The supremum in \eqref{eq:def-F} is therefore a maximum.
+\end{theorem}
+
+The remainder of the manuscript proves this theorem.  The problem originates in the data-selection framework described in \cite{HMSYopen,HMSYerm}.
+
+\section{Variance decomposition and the exact target inequality}
+
+For brevity, write
+\[
+\mu:=\mu_D
+\]
+and define the population variance
+\begin{equation}
+V(D):=\frac1N\sum_{r=1}^N\norm{z_r-\mu}_2^2.
+\label{eq:def-V}
+\end{equation}
+
+\begin{lemma}[Variance decomposition]
+For every $h\in\R^2$,
+\begin{equation}
+L_D(h)=V(D)+\norm{h-\mu}_2^2.
+\label{eq:variance-decomposition}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+For every observation $z_r$,
+\[
+h-z_r=(h-\mu)-(z_r-\mu).
+\]
+Using $\norm{a-b}^2=\norm a^2+\norm b^2-2\ip ab$,
+\[
+\norm{h-z_r}^2
+=\norm{h-\mu}^2+\norm{z_r-\mu}^2
+-2\ip{h-\mu}{z_r-\mu}.
+\]
+Average this identity over $r=1,\ldots,N$:
+\begin{align*}
+L_D(h)
+&=\norm{h-\mu}^2
+  +\frac1N\sum_{r=1}^N\norm{z_r-\mu}^2 \\
+&\quad
+  -2\ip{h-\mu}{\frac1N\sum_{r=1}^N(z_r-\mu)}.
+\end{align*}
+The last average is zero because
+\[
+\frac1N\sum_{r=1}^N(z_r-\mu)
+=\frac1N\sum_{r=1}^Nz_r-\mu
+=\mu-\mu=0.
+\]
+The middle term is $V(D)$ by \eqref{eq:def-V}, which proves \eqref{eq:variance-decomposition}.
+\end{proof}
+
+\begin{corollary}[Optimal population loss]
+The unique minimizer of $L_D$ is $h=\mu_D$, and
+\begin{equation}
+L_D^*=V(D).
+\label{eq:Lstar-equals-V}
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Equation \eqref{eq:variance-decomposition} writes $L_D(h)$ as the constant $V(D)$ plus the nonnegative quantity $\norm{h-\mu}^2$.  That quantity is zero exactly when $h=\mu$.
+\end{proof}
+
+\begin{definition}[Selected-mean squared error]
+Define
+\begin{equation}
+q(D):=
+\min_{(x_1,x_2,x_3)\in\supp(D)^3}
+\norm{\frac{x_1+x_2+x_3}{3}-\mu_D}_2^2.
+\label{eq:def-q}
+\end{equation}
+\end{definition}
+
+\begin{corollary}[Selected loss decomposes exactly]
+For every finite multiset $D$,
+\begin{equation}
+L_D^*(3)=V(D)+q(D).
+\label{eq:selected-decomposition}
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+For each legal triple, apply \eqref{eq:variance-decomposition} at
+\[
+h=\frac{x_1+x_2+x_3}{3}.
+\]
+This gives
+\[
+L_D\!\left(\frac{x_1+x_2+x_3}{3}\right)
+=V(D)+
+\norm{\frac{x_1+x_2+x_3}{3}-\mu_D}^2.
+\]
+The term $V(D)$ does not depend on the selected triple.  Therefore taking the minimum over all legal triples adds $V(D)$ to the minimum in \eqref{eq:def-q}, proving \eqref{eq:selected-decomposition}.
+\end{proof}
+
+\subsection{Why the target becomes \texorpdfstring{$q(D)\le V(D)/5$}{q(D) <= V(D)/5}}
+
+Assume first that $V(D)>0$.  By \eqref{eq:Lstar-equals-V} and \eqref{eq:selected-decomposition},
+\begin{equation}
+R(D)=\frac{V(D)+q(D)}{V(D)}
+=1+\frac{q(D)}{V(D)}.
+\label{eq:ratio-q}
+\end{equation}
+Every step in the following chain is reversible because $V(D)>0$:
+\begin{align}
+R(D)\le\frac65
+&\iff 1+\frac{q(D)}{V(D)}\le 1+\frac15 \notag\\
+&\iff \frac{q(D)}{V(D)}\le\frac15 \notag\\
+&\iff q(D)\le\frac15V(D).
+\label{eq:exact-target-equivalence}
+\end{align}
+Thus the universal upper bound in \eqref{eq:main-upper} is exactly equivalent, in the positive-variance case, to
+\begin{equation}
+q(D)\le\frac15V(D).
+\label{eq:target-q}
+\end{equation}
+
+\subsection{Zero variance is handled before division}
+
+\begin{proposition}[Zero-variance case]
+If $V(D)=0$, then every point of $D$ equals $\mu_D$, and
+\[
+L_D^*(3)=L_D^*=0.
+\]
+Hence $R(D)=1$ under the stated convention.  The case $L_D^*=0<L_D^*(3)$ cannot occur.
+\end{proposition}
+
+\begin{proof}
+The quantity $V(D)$ is an average of the nonnegative numbers $\norm{z_r-\mu_D}^2$.  If their average is zero, each one is zero.  Hence every $z_r=\mu_D$.  Selecting that support point three times produces selected mean $\mu_D$, so both optimal losses vanish.
+\end{proof}
+
+\begin{remark}[Translation and scaling]
+If $a\in\R^2$ and $c\ne0$, replacing every point $z\in D$ by $a+cz$ translates the mean by $a$ and multiplies both $L_D^*$ and $L_D^*(3)$ by $c^2$.  Thus the ratio is invariant under translation and nonzero scaling.  One may normalize a positive-variance population to mean zero and variance one, but the proof below keeps the variance visible.
+\end{remark}
+
+\section{From multisets to weighted laws and back}
+
+After merging equal locations, a finite multiset can be represented by distinct support points $z_1,\ldots,z_m$ with rational weights
+\[
+p_i=\frac{n_i}{N},\qquad p_i>0,\qquad \sum_{i=1}^m p_i=1,
+\]
+where $n_i$ is the multiplicity of $z_i$.
+
+For a finitely supported probability law $P=\{(z_i,p_i)\}_{i=1}^m$, define
+\begin{align}
+\mu(P)&:=\sum_i p_i z_i,\label{eq:weighted-mean}\\
+V(P)&:=\sum_i p_i\norm{z_i-\mu(P)}^2,\label{eq:weighted-variance}\\
+q(P)&:=\min_{x_1,x_2,x_3\in\supp(P)}
+\norm{\frac{x_1+x_2+x_3}{3}-\mu(P)}^2.
+\label{eq:weighted-q}
+\end{align}
+The selected points may again be repeated.
+
+\begin{proposition}[Rational weights are exactly finite multisets]
+Every finite multiset induces a finitely supported law with rational weights.  Conversely, every finitely supported law with rational weights is represented by a finite multiset.  This correspondence preserves the support, mean, variance, $q$, and approximation ratio.
+\end{proposition}
+
+\begin{proof}
+The forward direction uses $p_i=n_i/N$.  Conversely, choose a common denominator $N$ and write $p_i=n_i/N$ with integers $n_i\ge1$; then take $n_i$ copies of $z_i$.  Since repeated selection is allowed, the legal selected averages depend only on the support, not on the population multiplicities.  The weighted and multiset formulas for the mean and variance are identical after grouping equal observations.
+\end{proof}
+
+Real weights arise in the support reduction below.  Their use can be justified both directly and by closure.
+
+\begin{proposition}[Continuity and closure]
+Fix distinct points $z_1,\ldots,z_m$ and a simplex face determined by an index set $I$, meaning $p_i>0$ for $i\in I$ and $p_i=0$ for $i\notin I$.  On that face, $\mu(P)$, $V(P)$, and $q(P)$ are continuous functions of $p$.  Wherever $V(P)>0$, the ratio $1+q(P)/V(P)$ is continuous.  Consequently, the supremum over real finitely supported laws equals the supremum over finite multisets.
+\end{proposition}
+
+\begin{proof}
+The mean is linear in $p$, and
+\begin{equation}
+V(P)=\sum_i p_i\norm{z_i}^2-\norm{\sum_i p_i z_i}^2,
+\label{eq:variance-second-moment}
+\end{equation}
+so $V(P)$ is continuous.
+
+On the fixed support face $I$, each legal selected mean is indexed by a vector
+\[
+k=(k_i)_{i\in I},\qquad k_i\in\mathbb Z_{\ge0},\qquad \sum_{i\in I}k_i=3.
+\]
+There are finitely many such vectors.  For each one,
+\[
+p\longmapsto
+\norm{\sum_{i\in I}\frac{k_i}{3}z_i-\sum_{i\in I}p_i z_i}^2
+\]
+is continuous.  The minimum of finitely many continuous functions is continuous, so $q(P)$ is continuous.  Division by $V(P)$ is continuous wherever $V(P)>0$.
+
+Positive rational points are dense in every simplex face.  Thus every positive-variance real-weight law can be approximated, without changing its support, by rational-weight laws whose ratios converge to its ratio.  Each rational-weight law is a finite multiset by the preceding proposition.  Zero-variance laws have ratio one and do not enlarge the supremum.
+\end{proof}
+
+\begin{remark}[Why no approximation is needed for the upper bound]
+The support reduction may produce real weights, but the three-point inequality will be proved for every real probability vector.  The resulting selected triple uses original support points and is therefore legal for the original multiset.  Rational approximation is needed only to identify the two suprema abstractly, not to transfer the upper bound.
+\end{remark}
+
+\section{A self-contained reduction to at most three support points}
+
+\begin{lemma}[Support reduction]
+Let $P$ be a finitely supported probability law in $\R^2$.  There exists a probability law $P'$ such that
+\begin{enumerate}[label=(\roman*)]
+\item $\supp(P')\subseteq\supp(P)$;
+\item $|\supp(P')|\le3$;
+\item $\mu(P')=\mu(P)$;
+\item $V(P')\le V(P)$.
+\end{enumerate}
+Moreover,
+\begin{equation}
+q(P)\le q(P').
+\label{eq:q-support-direction}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Write the distinct support points of $P$ as $z_1,\ldots,z_m$, with mean
+\[
+\mu=\sum_{i=1}^m p_i z_i.
+\]
+Consider the feasible set of alternative weights that preserve total mass and mean:
+\begin{equation}
+\mathcal P=
+\left\{a\in\R^m:
+ a_i\ge0,\quad
+ \sum_i a_i=1,\quad
+ \sum_i a_i z_i=\mu
+\right\}.
+\label{eq:weight-polytope}
+\end{equation}
+The original weight vector $p$ belongs to $\mathcal P$, so the set is nonempty.  It is closed and contained in the standard simplex, hence compact.
+
+Define the linear functional
+\begin{equation}
+J(a):=\sum_{i=1}^m a_i\norm{z_i}^2.
+\label{eq:J}
+\end{equation}
+Because $\mathcal P$ is compact, $J$ has a minimizer.  Among all minimizers, choose $a^*$ with the smallest possible number of positive coordinates.
+
+Suppose, for contradiction, that $a^*$ has at least four positive coordinates.  Form the $3\times m$ matrix
+\begin{equation}
+B=
+\begin{pmatrix}
+1&1&\cdots&1\\
+z_1^{(1)}&z_2^{(1)}&\cdots&z_m^{(1)}\\
+z_1^{(2)}&z_2^{(2)}&\cdots&z_m^{(2)}
+\end{pmatrix}.
+\label{eq:B-matrix}
+\end{equation}
+Restrict $B$ to the columns corresponding to positive coordinates of $a^*$.  There are at least four columns in $\R^3$, so they are linearly dependent.  Therefore there exists a nonzero vector $u\in\R^m$, supported only on the positive coordinates of $a^*$, such that
+\begin{equation}
+Bu=0.
+\label{eq:Bu0}
+\end{equation}
+The first row of \eqref{eq:Bu0} gives $\sum_i u_i=0$, and the last two rows give $\sum_i u_i z_i=0$.
+
+For sufficiently small $\varepsilon>0$, both $a^*+\varepsilon u$ and $a^*-\varepsilon u$ are nonnegative, because $u$ is supported where $a_i^*>0$.  Equation \eqref{eq:Bu0} shows that both perturbations remain in $\mathcal P$.  Since $a^*$ minimizes $J$,
+\[
+J(a^*+\varepsilon u)\ge J(a^*)
+\quad\text{and}\quad
+J(a^*-\varepsilon u)\ge J(a^*).
+\]
+By linearity of $J$, these inequalities are
+\[
+\varepsilon J(u)\ge0
+\quad\text{and}\quad
+-\varepsilon J(u)\ge0.
+\]
+Hence
+\begin{equation}
+J(u)=0.
+\label{eq:Ju0}
+\end{equation}
+
+Because $u\ne0$ and $\sum_i u_i=0$, $u$ has at least one negative coordinate.  Set
+\begin{equation}
+t:=\min_{i:u_i<0}\frac{a_i^*}{-u_i}>0.
+\label{eq:push-time}
+\end{equation}
+Then $a^*+tu\ge0$, and at least one formerly positive coordinate becomes zero.  Equations \eqref{eq:Bu0} and \eqref{eq:Ju0} show that $a^*+tu$ is feasible and has the same objective value as $a^*$.  It is therefore another minimizer of $J$, but with strictly fewer positive coordinates.  This contradicts the choice of $a^*$.
+
+Thus $a^*$ has at most three positive coordinates.  Let $P'$ be the law with weights $a^*$.  It is supported on at most three original support points and has mean $\mu$.
+
+It remains to compare variances.  For every $a\in\mathcal P$,
+\begin{align}
+V(a)
+&=\sum_i a_i\norm{z_i-\mu}^2 \notag\\
+&=\sum_i a_i\norm{z_i}^2
+ -2\ip{\sum_i a_i z_i}{\mu}
+ +\left(\sum_i a_i\right)\norm{\mu}^2 \notag\\
+&=J(a)-2\norm{\mu}^2+\norm{\mu}^2 \notag\\
+&=J(a)-\norm{\mu}^2.
+\label{eq:variance-J}
+\end{align}
+Since $a^*$ minimizes $J$ and the original weight vector $p$ is feasible,
+\[
+V(P')\le V(P).
+\]
+
+Finally, $P$ and $P'$ have the same mean, while $\supp(P')\subseteq\supp(P)$.  Every triple legal for $P'$ is also legal for $P$.  A minimum over the larger set cannot be larger, so
+\[
+q(P)\le q(P').
+\]
+This proves all assertions.
+\end{proof}
+
+\begin{corollary}[Correct transfer chain]
+If every law supported on at most three points satisfies $q(P')\le V(P')/5$, then every finitely supported planar law satisfies $q(P)\le V(P)/5$.
+\end{corollary}
+
+\begin{proof}
+Apply the support-reduction lemma and write the inequalities in their actual direction:
+\begin{equation}
+q(P)\le q(P')\le\frac15V(P')\le\frac15V(P).
+\label{eq:transfer-chain}
+\end{equation}
+\end{proof}
+
+\section{Three support labels and the denominator-three grid}
+
+Let a reduced law have at most three support points.  Add zero-weight labels if necessary and write
+\[
+p=(p_1,p_2,p_3),\qquad p_i\ge0,\qquad p_1+p_2+p_3=1.
+\]
+Let the labeled support points be $v_1,v_2,v_3$, and center them at the common population mean:
+\[
+w_i:=v_i-\mu.
+\]
+Then
+\begin{equation}
+\sum_{i=1}^3p_iw_i=0
+\label{eq:center-condition}
+\end{equation}
+and
+\begin{equation}
+V=\sum_{i=1}^3p_i\norm{w_i}^2.
+\label{eq:three-point-V}
+\end{equation}
+A label with $p_i=0$ is not a support point and may not be selected.  The certificate below will assign zero probability to every selection that uses such a label.
+
+A deterministic selection of exactly three labels is described by multiplicities
+\[
+k=(k_1,k_2,k_3)\in\mathbb Z_{\ge0}^3,
+\qquad k_1+k_2+k_3=3.
+\]
+Define its frequency vector $s=k/3$.  The denominator-three grid is
+\begin{equation}
+G_3:=\left\{\frac{k}{3}:k\in\mathbb Z_{\ge0}^3,
+\ k_1+k_2+k_3=3\right\}.
+\label{eq:G3}
+\end{equation}
+It contains exactly ten points:
+\begin{align*}
+&(1,0,0),(0,1,0),(0,0,1),\\
+&(2/3,1/3,0),(2/3,0,1/3),(1/3,2/3,0),\\
+&(0,2/3,1/3),(1/3,0,2/3),(0,1/3,2/3),\\
+&(1/3,1/3,1/3).
+\end{align*}
+For $s\in G_3$, the centered selected mean is
+\[
+\sum_i s_iw_i.
+\]
+By \eqref{eq:center-condition},
+\begin{equation}
+\sum_i s_iw_i
+=\sum_i(s_i-p_i)w_i.
+\label{eq:s-minus-p}
+\end{equation}
+Define the corresponding squared error
+\begin{equation}
+E(s):=\norm{\sum_i(s_i-p_i)w_i}^2.
+\label{eq:E-s}
+\end{equation}
+
+The covariance matrix associated with $p$ is
+\begin{equation}
+C_p:=\diag(p)-pp^{\mathsf T}.
+\label{eq:Cp}
+\end{equation}
+The next lemma constructs a random legal grid point $S$ whose second moment around $p$ is exactly $C_p/5$.
+
+\section{Exact covariance certificate}
+
+For nonnegative integers $a,b,c$ with $a+b+c=3$, write
+\[
+s_{abc}:=\frac13(a,b,c).
+\]
+
+\begin{lemma}[Exact denominator-three certificate]
+For every $p\in\R_{
+\ge0}^3$ with $p_1+p_2+p_3=1$, there exists a probability distribution $\lambda$ on $G_3$ such that
+\begin{equation}
+\sum_{s\in G_3}\lambda_s(s-p)(s-p)^{\mathsf T}
+=\frac15\bigl(\diag(p)-pp^{\mathsf T}\bigr).
+\label{eq:certificate}
+\end{equation}
+In addition, if $p_i=0$, then every grid point with $s_i>0$ has coefficient $\lambda_s=0$.
+\end{lemma}
+
+\begin{proof}
+The assertion is invariant under simultaneous permutation of the three labels: a permutation maps $G_3$ to itself and conjugates both sides of \eqref{eq:certificate} by the same permutation matrix.  We may therefore assume
+\begin{equation}
+p_1\ge p_2\ge p_3\ge0.
+\label{eq:sorted-p}
+\end{equation}
+We divide the sorted simplex into two chambers.
+
+\subsubsection*{Case A: $p_2\ge1/6$}
+Assign nonzero coefficients only to the four grid points below:
+\begin{equation}
+\begin{array}{c|c}
+\toprule
+s&\lambda_s\\
+\midrule
+s_{111}&a:=\dfrac95p_3\\[2mm]
+s_{120}&b:=\dfrac95p_2-\dfrac3{10}\\[2mm]
+s_{210}&c:=\dfrac95p_1-\dfrac35\\[2mm]
+s_{300}&d:=\dfrac1{10}\\
+\bottomrule
+\end{array}
+\label{eq:case-A-weights}
+\end{equation}
+All four coefficients are nonnegative.  Indeed, $a\ge0$; the assumption $p_2\ge1/6$ gives
+\[
+b=\frac{18p_2-3}{10}\ge0;
+\]
+and sortedness implies $p_1\ge1/3$, so
+\[
+c=\frac{9p_1-3}{5}\ge0.
+\]
+Finally $d=1/10>0$.
+
+Their sum is
+\begin{align*}
+a+b+c+d
+&=\frac95(p_1+p_2+p_3)-\frac3{10}-\frac35+\frac1{10}\\
+&=\frac95-\frac3{10}-\frac6{10}+\frac1{10}=1.
+\end{align*}
+Thus they define a probability distribution.
+
+Let
+\[
+m:=\E S,
+\qquad
+Q:=\E[SS^{\mathsf T}].
+\]
+We compute every independent coordinate.
+
+For the first moment,
+\begin{align*}
+m_1
+&=\frac13a+\frac13b+\frac23c+d\\
+&=\frac35p_3+\left(\frac35p_2-\frac1{10}\right)
+ +\left(\frac65p_1-\frac25\right)+\frac1{10}\\
+&=\frac{3p_1+1}{5},\\[3pt]
+m_2
+&=\frac13a+\frac23b+\frac13c\\
+&=\frac35p_3+\left(\frac65p_2-\frac15\right)
+ +\left(\frac35p_1-\frac15\right)\\
+&=\frac{3p_2+1}{5},\\[3pt]
+m_3
+&=\frac13a=\frac35p_3.
+\end{align*}
+Hence
+\begin{equation}
+m=\frac15(3p_1+1,\ 3p_2+1,\ 3p_3)^{\mathsf T}.
+\label{eq:case-A-m}
+\end{equation}
+
+For the second moment,
+\begin{align*}
+Q_{11}
+&=\frac19a+\frac19b+\frac49c+d\\
+&=\frac15p_3+\left(\frac15p_2-\frac1{30}\right)
+ +\left(\frac45p_1-\frac4{15}\right)+\frac1{10}\\
+&=\frac35p_1,\\[3pt]
+Q_{22}
+&=\frac19a+\frac49b+\frac19c\\
+&=\frac15p_3+\left(\frac45p_2-\frac2{15}\right)
+ +\left(\frac15p_1-\frac1{15}\right)\\
+&=\frac35p_2,\\[3pt]
+Q_{33}
+&=\frac19a=\frac15p_3,\\[3pt]
+Q_{12}
+&=\frac19a+\frac29b+\frac29c\\
+&=\frac15p_3+\left(\frac25p_2-\frac1{15}\right)
+ +\left(\frac25p_1-\frac2{15}\right)\\
+&=\frac{p_1+p_2}{5},\\[3pt]
+Q_{13}&=\frac19a=\frac15p_3,\\
+Q_{23}&=\frac19a=\frac15p_3.
+\end{align*}
+Therefore
+\begin{equation}
+Q=\frac15
+\begin{pmatrix}
+3p_1&p_1+p_2&p_3\\
+p_1+p_2&3p_2&p_3\\
+p_3&p_3&p_3
+\end{pmatrix}.
+\label{eq:case-A-Q}
+\end{equation}
+
+Now set
+\begin{equation}
+M:=\E[(S-p)(S-p)^{\mathsf T}]
+=Q-mp^{\mathsf T}-pm^{\mathsf T}+pp^{\mathsf T}.
+\label{eq:M-from-mQ}
+\end{equation}
+Using \eqref{eq:case-A-m} and \eqref{eq:case-A-Q}, the diagonal entries are
+\begin{align*}
+M_{11}
+&=\frac{3p_1}{5}-2p_1\frac{3p_1+1}{5}+p_1^2
+=\frac{p_1-p_1^2}{5},\\
+M_{22}
+&=\frac{3p_2}{5}-2p_2\frac{3p_2+1}{5}+p_2^2
+=\frac{p_2-p_2^2}{5},\\
+M_{33}
+&=\frac{p_3}{5}-2p_3\frac{3p_3}{5}+p_3^2
+=\frac{p_3-p_3^2}{5}.
+\end{align*}
+The off-diagonal entries are
+\begin{align*}
+M_{12}
+&=\frac{p_1+p_2}{5}
+ -p_2\frac{3p_1+1}{5}
+ -p_1\frac{3p_2+1}{5}+p_1p_2
+=-\frac{p_1p_2}{5},\\
+M_{13}
+&=\frac{p_3}{5}
+ -p_3\frac{3p_1+1}{5}
+ -p_1\frac{3p_3}{5}+p_1p_3
+=-\frac{p_1p_3}{5},\\
+M_{23}
+&=\frac{p_3}{5}
+ -p_3\frac{3p_2+1}{5}
+ -p_2\frac{3p_3}{5}+p_2p_3
+=-\frac{p_2p_3}{5}.
+\end{align*}
+These are exactly the entries of $\frac15(\diag(p)-pp^{\mathsf T})$.  This proves \eqref{eq:certificate} in Case A.
+
+\subsubsection*{Case B: $p_2<1/6$}
+Since $p_3\le p_2<1/6$,
+\begin{equation}
+p_1=1-p_2-p_3>\frac23.
+\label{eq:p1-large}
+\end{equation}
+Assign nonzero coefficients only to
+\begin{equation}
+\begin{array}{c|c}
+\toprule
+s&\lambda_s\\
+\midrule
+s_{201}&a:=\dfrac95p_3\\[2mm]
+s_{210}&b:=\dfrac95p_2\\[2mm]
+s_{300}&c:=\dfrac{9p_1-4}{5}\\
+\bottomrule
+\end{array}
+\label{eq:case-B-weights}
+\end{equation}
+The first two coefficients are nonnegative.  Equation \eqref{eq:p1-large} gives $9p_1-4>2$, so $c>0$.  Their sum is
+\[
+a+b+c=\frac{9(p_1+p_2+p_3)-4}{5}=1.
+\]
+
+The first moment is
+\begin{align*}
+m_1
+&=\frac23a+\frac23b+c
+=\frac65(p_2+p_3)+\frac{9p_1-4}{5}
+=\frac{3p_1+2}{5},\\
+m_2&=\frac13b=\frac35p_2,\\
+m_3&=\frac13a=\frac35p_3.
+\end{align*}
+Thus
+\begin{equation}
+m=\frac15(3p_1+2,\ 3p_2,\ 3p_3)^{\mathsf T}.
+\label{eq:case-B-m}
+\end{equation}
+
+The second moment has entries
+\begin{align*}
+Q_{11}
+&=\frac49a+\frac49b+c
+=\frac45(p_2+p_3)+\frac{9p_1-4}{5}=p_1,\\
+Q_{22}&=\frac19b=\frac15p_2,\\
+Q_{33}&=\frac19a=\frac15p_3,\\
+Q_{12}&=\frac29b=\frac25p_2,\\
+Q_{13}&=\frac29a=\frac25p_3,\\
+Q_{23}&=0.
+\end{align*}
+Therefore
+\begin{equation}
+Q=\frac15
+\begin{pmatrix}
+5p_1&2p_2&2p_3\\
+2p_2&p_2&0\\
+2p_3&0&p_3
+\end{pmatrix}.
+\label{eq:case-B-Q}
+\end{equation}
+
+Again use \eqref{eq:M-from-mQ}.  The diagonal entries are
+\begin{align*}
+M_{11}
+&=p_1-2p_1\frac{3p_1+2}{5}+p_1^2
+=\frac{p_1-p_1^2}{5},\\
+M_{22}
+&=\frac{p_2}{5}-2p_2\frac{3p_2}{5}+p_2^2
+=\frac{p_2-p_2^2}{5},\\
+M_{33}
+&=\frac{p_3}{5}-2p_3\frac{3p_3}{5}+p_3^2
+=\frac{p_3-p_3^2}{5}.
+\end{align*}
+The off-diagonal entries are
+\begin{align*}
+M_{12}
+&=\frac{2p_2}{5}
+ -p_2\frac{3p_1+2}{5}
+ -p_1\frac{3p_2}{5}+p_1p_2
+=-\frac{p_1p_2}{5},\\
+M_{13}
+&=\frac{2p_3}{5}
+ -p_3\frac{3p_1+2}{5}
+ -p_1\frac{3p_3}{5}+p_1p_3
+=-\frac{p_1p_3}{5},\\
+M_{23}
+&=0-p_3\frac{3p_2}{5}-p_2\frac{3p_3}{5}+p_2p_3
+=-\frac{p_2p_3}{5}.
+\end{align*}
+Thus \eqref{eq:certificate} also holds in Case B.
+
+\subsubsection*{Boundary labels}
+Suppose $p_3=0$.  In Case A, the only listed grid point using label $3$ is $s_{111}$, and its coefficient is $(9/5)p_3=0$.  In Case B, the only listed point using label $3$ is $s_{201}$, again with coefficient zero.
+
+If $p_2=0$, sortedness forces $p_3=0$.  Case B applies, the coefficients of $s_{201}$ and $s_{210}$ are both zero, and $s_{300}$ has coefficient one.  Therefore no zero-weight label is ever selected.  Undoing the initial permutation preserves this property.  The lemma is proved on the whole simplex, including all edges and vertices.
+\end{proof}
+
+\section{Extraction of a deterministic triple and the upper bound}
+
+\begin{lemma}[Three-point inequality]
+Every probability law supported on at most three points in $\R^2$ satisfies
+\begin{equation}
+q(P)\le\frac15V(P).
+\label{eq:three-point-ineq}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Use the centered vectors $w_i$ and weights $p_i$ from Section 5.  Let $S$ be the random grid point supplied by the exact covariance certificate.  Define the random centered selected mean
+\begin{equation}
+Y:=\sum_{i=1}^3S_iw_i.
+\label{eq:def-Y}
+\end{equation}
+Every realization of $S$ represents exactly three selections because $S=k/3$ with $\sum_i k_i=3$.  The boundary part of the certificate ensures that only positive-weight support labels are used.
+
+By \eqref{eq:center-condition},
+\[
+Y=\sum_i(S_i-p_i)w_i.
+\]
+Therefore
+\begin{align}
+\E\norm{Y}^2
+&=\sum_{i,j}
+\E[(S_i-p_i)(S_j-p_j)]\ip{w_i}{w_j} \notag\\
+&=\frac15\sum_{i,j}
+\bigl(p_i\mathbf 1_{\{i=j\}}-p_ip_j\bigr)\ip{w_i}{w_j} \notag\\
+&=\frac15\sum_i p_i\norm{w_i}^2
+ -\frac15\norm{\sum_i p_iw_i}^2 \notag\\
+&=\frac15V(P).
+\label{eq:expected-error}
+\end{align}
+The expectation in \eqref{eq:expected-error} is a finite probability-weighted average of the deterministic errors $E(s)$.  Hence
+\[
+\min_{s:\lambda_s>0}E(s)
+\le\sum_s\lambda_sE(s)
+=\frac15V(P).
+\]
+The quantity $q(P)$ is the minimum over all legal selections, so it is no larger than the minimum over the certificate-supported selections.  Thus $q(P)\le V(P)/5$.
+\end{proof}
+
+\begin{theorem}[Universal upper bound]
+Every finite multiset $D\subset\R^2$ satisfies
+\[
+L_D^*(3)\le\frac65L_D^*.
+\]
+\end{theorem}
+
+\begin{proof}
+If $V(D)=0$, the result follows from the zero-variance proposition.  Assume $V(D)>0$.
+
+Represent $D$ as its rational weighted law and apply the support-reduction lemma.  It gives a law $P'$ supported on at most three original support points, with the same mean and
+\[
+V(P')\le V(D),
+\qquad
+q(D)\le q(P').
+\]
+The three-point inequality gives $q(P')\le V(P')/5$.  Therefore
+\begin{equation}
+q(D)\le q(P')\le\frac15V(P')\le\frac15V(D).
+\label{eq:upper-chain-final}
+\end{equation}
+Using \eqref{eq:selected-decomposition} and \eqref{eq:Lstar-equals-V},
+\begin{align*}
+L_D^*(3)
+&=V(D)+q(D)\\
+&\le V(D)+\frac15V(D)\\
+&=\frac65V(D)\\
+&=\frac65L_D^*.
+\end{align*}
+\end{proof}
+
+\section{Exact matching lower bound}
+
+\begin{proposition}[Six-point equality construction]
+Let $D$ consist of five copies of $(0,0)$ and one copy of $(1,0)$.  Then
+\[
+\frac{L_D^*(3)}{L_D^*}=\frac65.
+\]
+\end{proposition}
+
+\begin{proof}
+The population mean is
+\[
+\mu_D=\left(\frac16,0\right).
+\]
+The variance is
+\begin{align*}
+V(D)
+&=\frac56\left(\frac16\right)^2
+ +\frac16\left(1-\frac16\right)^2\\
+&=\frac5{216}+\frac{25}{216}
+=\frac5{36}.
+\end{align*}
+Equivalently, $\E X_1^2-(\E X_1)^2=1/6-1/36=5/36$.
+
+A selected triple contains $j\in\{0,1,2,3\}$ copies of $(1,0)$, so its mean is $(j/3,0)$.  Its squared distance from $\mu_D$ is
+\begin{equation}
+\begin{array}{c|cccc}
+\toprule
+j&0&1&2&3\\
+\midrule
+\left(j/3-1/6\right)^2&1/36&1/36&1/4&25/36\\
+\bottomrule
+\end{array}
+\label{eq:lower-table}
+\end{equation}
+Thus $q(D)=1/36$.  By \eqref{eq:selected-decomposition},
+\[
+L_D^*(3)=\frac5{36}+\frac1{36}=\frac16.
+\]
+Since $L_D^*=V(D)=5/36$,
+\[
+\frac{L_D^*(3)}{L_D^*}
+=\frac{1/6}{5/36}=\frac65.
+\]
+\end{proof}
+
+Combining the universal upper bound with this exact equality example proves
+\[
+\boxed{F(2,3)=\frac65}.
+\]
+Because the example is a finite multiset, the supremum is attained.
+
+\section{Equality and extremal information}
+
+The lower-bound example is collinear.  Equality is not confined to a line.
+
+\subsection{Two-point equality laws}
+
+Let the two distinct support points be $a,b$, let $d=b-a\ne0$, and put mass $\theta$ at $b$ and $1-\theta$ at $a$.  Then
+\[
+\mu=a+\theta d,
+\qquad
+V=\theta(1-\theta)\norm d^2.
+\]
+A selected triple containing $j$ copies of $b$ has mean $a+(j/3)d$, so
+\begin{equation}
+q=\operatorname{dist}\!\left(
+\theta,\left\{0,\frac13,\frac23,1\right\}
+\right)^2\norm d^2.
+\label{eq:two-point-q}
+\end{equation}
+By symmetry, assume $0\le\theta\le1/2$.
+
+If $0\le\theta\le1/6$, the nearest grid point is $0$, and equality $q=V/5$ for $\theta>0$ is
+\[
+5\theta^2=\theta(1-\theta),
+\]
+which gives $\theta=1/6$.
+
+If $1/6\le\theta\le1/2$, the nearest grid point is $1/3$, and
+\begin{align*}
+\theta(1-\theta)-5\left(\theta-\frac13\right)^2
+&=-\frac{(6\theta-1)(9\theta-5)}9.
+\end{align*}
+On this interval the first factor is nonnegative and the second is negative, except that the first vanishes at $\theta=1/6$.  Hence equality again occurs only at $\theta=1/6$.  By symmetry, the nondegenerate two-point equality weights are exactly
+\begin{equation}
+\left\{\frac16,\frac56\right\}.
+\label{eq:two-point-equality}
+\end{equation}
+
+\subsection{A noncollinear equality example}
+
+Take a six-point multiset with four copies of
+\[
+a=(1,-1),
+\]
+one copy of
+\[
+b=(1,5),
+\]
+and one copy of
+\[
+c=(-5,-1).
+\]
+Its mean is zero because
+\[
+\frac23a+\frac16b+\frac16c=0.
+\]
+Its variance is
+\[
+V=\frac23\norm a^2+\frac16\norm b^2+\frac16\norm c^2
+=\frac23\cdot2+\frac16\cdot26+\frac16\cdot26=10.
+\]
+For multiplicities $k_1+k_2+k_3=3$, the selected mean is
+\[
+\frac{k_1a+k_2b+k_3c}{3}
+=(1-2k_3,-1+2k_2).
+\]
+The ten squared norms are
+\begin{equation}
+\begin{array}{c|cccccccccc}
+\toprule
+k&003&012&021&030&102&111&120&201&210&300\\
+\midrule
+\norm{\bar x_k}^2&26&10&10&26&10&2&10&2&2&2\\
+\bottomrule
+\end{array}
+\label{eq:planar-extremizer-table}
+\end{equation}
+Thus $q=2=V/5$, and the ratio is $6/5$.  The vectors $b-a=(0,6)$ and $c-a=(-6,0)$ are linearly independent, so the support is genuinely planar.
+
+\subsection{A fixed weight vector forcing rank two}
+
+The optimal quadratic form need not be reducible to rank one.  Consider
+\[
+p=\left(\frac{29}{36},\frac4{36},\frac3{36}\right)
+\]
+and centered support points
+\[
+a=(2,-1),\qquad b=(-7,8),\qquad c=(-10,-1).
+\]
+One checks that $29a+4b+3c=0$, that $V=25$, and that the ten selected squared norms, in the order
+\[
+003,012,021,030,102,111,120,201,210,300,
+\]
+are
+\[
+101,85,89,113,37,29,41,5,5,5.
+\]
+Thus $q=5=V/5$.
+
+For this $p$, Case B of the certificate gives strictly positive coefficients on $201$, $210$, and $300$.  If a normalized positive-semidefinite form is optimal, all three of these values must equal the common minimum $1/5$.  In tangent coordinates $u=(u_1,u_2,-u_1-u_2)$, write the form as
+\[
+G=\begin{pmatrix}\alpha&\beta\\\beta&\gamma\end{pmatrix}.
+\]
+After multiplying displacement coordinates by $36$, the three active vectors are
+\[
+(-5,-4),\qquad(-5,8),\qquad(7,-4).
+\]
+Equality of the first and third quadratic values gives $\beta=\alpha/4$.  Equality of the second and third gives $\gamma=5\alpha/8$.  Hence
+\[
+\det G=\alpha\gamma-\beta^2
+=\frac9{16}\alpha^2.
+\]
+A normalized form is nonzero; positive semidefiniteness and the displayed relations then force $\alpha>0$.  Therefore $\det G>0$, so every optimal form for this fixed $p$ has rank two.
+
+\section{Semidefinite formulation}
+
+This section is not needed for the direct upper-bound proof, but it explains the certificate as an exact dual solution.  Write
+\[
+\Delta_2:=\{p\in\R_{\ge0}^3:p_1+p_2+p_3=1\}.
+\]
+
+Let
+\[
+I:=\{i:p_i>0\}
+\]
+and define
+\[
+T_I:=\left\{u\in\R^3:\one^{\mathsf T}u=0,
+\quad u_j=0\text{ for }j\notin I\right\}.
+\]
+If $|I|=1$, the law has zero variance and is handled separately.  In that case $C_p=0$, so the normalization $\langle H,C_p\rangle=1$ is infeasible.  Define the normalized excess value on this one-point face to be zero.
+
+Assume $|I|\ge2$.  For $u\in T_I$,
+\[
+u^{\mathsf T}C_pu
+=\sum_i p_i u_i^2-\left(\sum_i p_i u_i\right)^2.
+\]
+This is the weighted variance of the scalar values $u_i$.  It vanishes only when all $u_i$ on $I$ are equal; the unweighted sum condition then forces that common value to be zero.  Thus $C_p$ is positive definite on $T_I$.
+
+\subsection{From geometry to a positive-semidefinite form}
+
+For labels outside $I$, set $w_j=0$; these columns are never selected and do not affect the restriction to $T_I$.  Let $A:\R^3\to\R^2$ have columns $w_i$.  Since $Ap=\sum_i p_iw_i=0$, every legal $s$ satisfies
+\[
+A(s-p)=As=\sum_i s_iw_i.
+\]
+Define the quadratic form $H=A^{\mathsf T}A$ on $T_I$.  Then
+\[
+(s-p)^{\mathsf T}H(s-p)=\norm{\sum_i s_iw_i}^2.
+\]
+Moreover,
+\begin{align}
+\langle H,C_p\rangle
+&=\operatorname{tr}(AC_pA^{\mathsf T}) \notag\\
+&=\sum_i p_i\norm{w_i}^2
+ -\norm{\sum_i p_iw_i}^2
+=V.
+\label{eq:H-variance}
+\end{align}
+
+\subsection{Every form is realizable in \texorpdfstring{$\R^2$}{R2}}
+
+Conversely, let $H\succeq0$ be a quadratic form on $T_I$.  Since $\dim T_I\le2$, there is a linear map $L:T_I\to\R^2$ such that $H=L^{\mathsf T}L$.  For $i\in I$, define
+\[
+w_i:=L(e_i-p).
+\]
+The vector $e_i-p$ belongs to $T_I$.  Also,
+\[
+\sum_i p_iw_i
+=L\left(\sum_i p_i(e_i-p)\right)
+=L(p-p)=0.
+\]
+For every legal frequency vector $s$ supported on $I$,
+\[
+\sum_i s_iw_i=L(s-p).
+\]
+Finally,
+\begin{align*}
+\sum_i p_i\norm{w_i}^2
+&=\left\langle H,
+\sum_i p_i(e_i-p)(e_i-p)^{\mathsf T}\right\rangle\\
+&=\langle H,C_p\rangle.
+\end{align*}
+Thus every admissible form is realized by an actual planar support geometry.  Rank-one forms give collinear support and rank-two forms give genuinely planar support.
+
+Let
+\[
+G_3(I):=\{s\in G_3:s_j=0\text{ for }j\notin I\}.
+\]
+After normalizing the variance to one, the fixed-weight excess problem is
+\begin{equation}
+\phi(p)=
+\max_{\substack{H\succeq0\text{ on }T_I\\
+\langle H,C_p\rangle=1}}
+\min_{s\in G_3(I)}(s-p)^{\mathsf T}H(s-p).
+\label{eq:phi-primal-short}
+\end{equation}
+The maximum exists: $C_p$ is positive definite on $T_I$, so the normalized positive-semidefinite feasible set is closed and bounded in a finite-dimensional space.  Define $\phi(p)=0$ at the three simplex vertices.  The support reduction and the two realization directions above give the exact global identity
+\begin{equation}
+F(2,3)-1=\sup_{p\in\Delta_2}\phi(p).
+\label{eq:rho-phi}
+\end{equation}
+
+\subsection{Dual problem}
+
+For $A_s:=(s-p)(s-p)^{\mathsf T}$, introduce a scalar $t$.  The primal SDP is
+\begin{equation}
+\begin{array}{ll}
+\text{maximize}&t\\[1mm]
+\text{subject to}&H\succeq0,\\
+&\langle H,C_p\rangle=1,\\
+&\langle H,A_s\rangle\ge t\quad(s\in G_3(I)).
+\end{array}
+\label{eq:SDP-primal}
+\end{equation}
+Give the last constraints multipliers $\lambda_s\ge0$ and the equality constraint multiplier $r\in\R$.  The Lagrangian is
+\begin{align*}
+\mathcal L(H,t;\lambda,r)
+&=t-\sum_s\lambda_s\bigl(t-\langle H,A_s\rangle\bigr)
++r\bigl(1-\langle H,C_p\rangle\bigr)\\
+&=r+t\left(1-\sum_s\lambda_s\right)
++\left\langle H,\sum_s\lambda_sA_s-rC_p\right\rangle.
+\end{align*}
+The supremum over unrestricted $t$ is finite exactly when $\sum_s\lambda_s=1$.  The supremum over $H\succeq0$ is finite exactly when
+\[
+\sum_s\lambda_sA_s\preceq rC_p
+\quad\text{on }T_I.
+\]
+Thus the dual is
+\begin{equation}
+\begin{array}{ll}
+\text{minimize}&r\\[1mm]
+\text{subject to}&\lambda_s\ge0,\quad\sum_s\lambda_s=1,\\
+&\displaystyle\sum_s\lambda_s(s-p)(s-p)^{\mathsf T}
+\preceq rC_p\quad\text{on }T_I.
+\end{array}
+\label{eq:SDP-dual}
+\end{equation}
+Strong duality holds for $|I|\ge2$: choose a positive-definite form $H_0$ on $T_I$, rescale it to satisfy $\langle H_0,C_p\rangle=1$, and choose $t_0$ strictly below every $\langle H_0,A_s\rangle$.  This is a strictly feasible primal point relative to the equality constraint.
+
+The certificate in \eqref{eq:certificate} is stronger than dual feasibility: it gives equality with $r=1/5$ in the ambient $3\times3$ matrix space.  Weak duality therefore already yields $\phi(p)\le1/5$.  The expectation proof in Section 7 is exactly the same calculation without SDP terminology.
+
+\section{Independent audit and verification}
+
+The proof dependency chain is
+\[
+\boxed{
+\begin{gathered}
+\text{definitions}
+\Longrightarrow
+\text{variance decomposition}
+\Longrightarrow
+\text{support reduction}\\
+\Longrightarrow
+\text{exact covariance certificate}
+\Longrightarrow
+\text{one deterministic triple}\\
+\Longrightarrow
+\text{upper bound}
+\end{gathered}
+}
+\]
+together with the independent six-point equality construction for the lower bound.
+
+The following potential failure modes were checked explicitly.
+
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+\item $L_D$ is defined in \eqref{eq:def-L} before $L_D^*$, $V(D)$, or $q(D)$ is used.
+\item The proof uses exactly three selections.  Every grid point is $k/3$ with $\sum_i k_i=3$.
+\item Repetition is allowed and is used by patterns such as $300$, $210$, and $201$.
+\item The selected mean is unweighted.  The coefficients $\lambda_s$ randomize over deterministic triples; they are not weights inside a selected mean.
+\item Population weights $p_i$ and selected frequencies $s_i=k_i/3$ are kept distinct.
+\item Zero variance is handled before any division by $V(D)$.
+\item The support-reduction directions are exactly
+\[
+q(P)\le q(P')\le V(P')/5\le V(P)/5.
+\]
+\item Zero-weight labels are not selected by the certificate.
+\item Coincident points, collinear support, rank-one forms, and rank-zero cases are not excluded.
+\item No unbiasedness condition $\E S=p$ is imposed or needed.
+\item No minimax interchange or floating-point optimization is used in the proof.
+\item The one-point SDP boundary is separated because $C_p=0$ there.
+\item A finite equality construction proves that the supremum is attained.
+\end{enumerate}
+
+An accompanying script, \texttt{verify\_samuil\_petkov\_f23.py}, performs exact symbolic verification of all nine entries of both covariance identities, exact boundary checks, exact verification of the collinear and noncollinear equality examples, and an additional rational-arithmetic stress test.  The script uses no optimization solver.  These computations are supplementary; the proof above is algebraically self-contained.
+
+\section*{Conclusion}
+
+Starting from the explicit definition
+\[
+L_D(h)=\frac1N\sum_{r=1}^N\norm{h-z_r}^2,
+\]
+the variance decomposition reduces the approximation problem to a selected-mean error bound.  A self-contained support reduction leaves at most three original support points.  The exact covariance certificate then produces a randomized legal triple with expected squared error $V/5$, from which one deterministic triple with error at most $V/5$ follows.  The six-point multiset with weights $5/6$ and $1/6$ attains equality.  Therefore
+\[
+\boxed{F(2,3)=\frac65}.
+\]
+
+\begin{thebibliography}{9}
+
+\bibitem{HMSYopen}
+S. Hanneke, S. Moran, A. Shlimovich, and A. Yehudayoff,
+\emph{Open Problem: Data Selection for Regression Tasks},
+Proceedings of the 38th Conference on Learning Theory (COLT),
+Proceedings of Machine Learning Research, vol. 291, 2025.
+
+\bibitem{HMSYerm}
+S. Hanneke, S. Moran, A. Shlimovich, and A. Yehudayoff,
+\emph{Data Selection for ERMs},
+Proceedings of the 38th Conference on Learning Theory (COLT),
+Proceedings of Machine Learning Research, vol. 291, 2025.
+
+\end{thebibliography}
+
+\end{document}
