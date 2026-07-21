@@ -57,6 +57,11 @@ theorem concerns deterministic empirical mean estimation with repeatable
 selections. It also does not resolve the COLT note's general `F(d,n)`, linear
 regression, vector-valued regression, or weighted-selection questions.
 
+## Other SolveAll-related projects
+
+- [Right outliers with exact zero weights](https://github.com/SamPetkov/zero-atom-right-outliers) — the nonnegative zero-gap special case of the ReLU/zero-diagonal outlier problem.
+- [One-factor FDR–FNR frontier](https://github.com/SamPetkov/one-factor-fdr-fnr) — a special-case result for one homogeneous rank-one Gaussian family related to the broad dependent-model FDR–FNR problem.
+
 ## Proof outline
 
 1. Variance decomposition reduces the loss ratio to `q(D) <= V(D)/5`.
