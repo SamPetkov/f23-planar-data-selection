@@ -11,6 +11,10 @@ version: "0.1.0"
 date-released: "2026-07-18"
 repository-code: "https://github.com/SamPetkov/f23-planar-data-selection"
 license: CC-BY-4.0
+identifiers:
+  - type: url
+    value: "https://www.solveall.org/problem/colt-2025-data-selection-for-regression-tasks"
+    description: "Related SolveAll listing; its current stochastic pool-selection formulation differs from the finite deterministic theorem in this repository"
 keywords:
   - data selection
   - mean estimation
